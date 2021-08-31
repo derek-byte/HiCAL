@@ -1,7 +1,6 @@
 import random
 
 GT_FILENAME = "Fictional_Ground_Truth.txt"
-FS_FILENAME = "Fictional_System.txt"
 
 def fictionalSystem():
     filename = "Fictional_System.txt"
@@ -53,15 +52,26 @@ def precision_at_k():
     print("The precision is: {} from {} documents".format(precision, k))
 
 def average_precision():
-    filelines = open(FS_FILENAME, "r").readlines()
-    total_doc = 0
-    total_ratings = 0
-    for line in filelines:
-        rating = line.split(" ")[1]
-        total_ratings += float(rating)
-        total_doc += 1
-    ans = round(total_ratings/total_doc, 2)
-    print("The average precision is: {} from {} documents".format(ans, "1000"))
+    filelines = open(GT_FILENAME, "r").readlines()
+
+    avprecision = 0
+    k = 1
+    while k < len(filelines):
+        num_rel = 0
+        total_doc = 0
+        for line in filelines[:k]:
+            rating = line.split(" ")[1]
+            if rating == "1\n":
+                num_rel += 1
+            total_doc += 1
+        precision = round(num_rel / total_doc, 2)
+        avprecision += precision
+        k += 1
+    avprecision = round(avprecision/k,2)
+    print("The average precision is: {} from {} documents".format(avprecision, k))
+
+fictionalSystem()
+groundTruthFile()
 
 try: 
     choice = str(input("Type 1 for total precision, 2 for precision@k, and 3 for average precision: "))
