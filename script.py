@@ -34,13 +34,7 @@ def total_precision():
     precision = round(num_rel / total_doc, 2)
     print("The total precision is: {}".format(precision))
 
-def precision_at_k():
-    filelines = open(GT_FILENAME, "r").readlines()
-    try: 
-        k = int(input("How many documents from 1-1000 to calculate precision@k: "))
-    except:
-        print("Did not write a proper answer. Try again.")
-
+def _precision_helper(filelines, k):
     num_rel = 0
     total_doc = 0
     for line in filelines[:k]:
@@ -48,7 +42,17 @@ def precision_at_k():
         if rating == "1\n":
             num_rel += 1
         total_doc += 1
-    precision = round(num_rel / total_doc, 2)
+    return round(num_rel / total_doc, 2)
+
+
+def precision_at_k():
+    filelines = open(GT_FILENAME, "r").readlines()
+    try: 
+        k = int(input("How many documents from 1-1000 to calculate precision@k: "))
+    except:
+        print("Did not write a proper answer. Try again.")
+
+    precision = _precision_helper(filelines, k)
     print("The precision is: {} from {} documents".format(precision, k))
 
 def average_precision():
@@ -57,14 +61,7 @@ def average_precision():
     avprecision = 0
     k = 1
     while k < len(filelines):
-        num_rel = 0
-        total_doc = 0
-        for line in filelines[:k]:
-            rating = line.split(" ")[1]
-            if rating == "1\n":
-                num_rel += 1
-            total_doc += 1
-        precision = round(num_rel / total_doc, 2)
+        precision = _precision_helper(filelines, k)
         avprecision += precision
         k += 1
     avprecision = round(avprecision/k,2)
